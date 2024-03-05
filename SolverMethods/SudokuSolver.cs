@@ -6,72 +6,76 @@ namespace SolverMethods
 {
     public class SudokuSolver
     {
-        public bool Solve(int[,] grid, int r = 0, int c = 0)
+        public int[,] Solve(int[,] grid, int row = 0, int column = 0)
         {
-            if (r == 9)
+            if (row == 9)
             {
-                return true;
+                return grid;
             }
-            else if(c == 9)
+            else if (column == 9)
             {
-                return Solve(grid, r + 1, 0);
+                return Solve(grid, row + 1, 0);
             }
-            else if(grid[r,c] != 0)
+            else if (grid[row, column] != 0)
             {
-                return Solve(grid, r, c + 1);
+                return Solve(grid, row, column + 1);
             }
             else
             {
-                for(int i = 0; i < 10; i++)
+                for (int i = 1; i <= 9; i++)
                 {
-                  if (IsValid(grid,r,c,i))
+                    if (IsValid(grid, row, column, i))
                     {
-                        grid[r, c] = i;
-                        if (Solve(grid, r, c + 1))
+                        grid[row, column] = i;
+
+                        int[,] result = Solve(grid, row, column + 1);
+
+                        if (result != null)
                         {
-                            return true;
+                            return result;
                         }
                         else
                         {
-                            grid[r, c] = 0;
+                            grid[row, column] = 0;
                         }
-
                     }
                 }
-                return false;
-
+                return null;
             }
         }
-
         private bool IsValid(int[,] grid, int r, int c, int k)
         {
-            //k is not found in grid[r]
-            bool notInRow = !GetRow(grid, r).Contains(k);
+            bool InRow = GetRow(grid, r).Contains(k);
+            bool InColumn = GetColumn(grid, c).Contains(k);
 
-            //k is not found in grid[c]
-            bool notInColumn = !GetColumn(grid,r).Contains(k);
+            int subGridStartRow = r / 3 * 3;
+            int subGridStartColumn = c / 3 * 3;
 
-            //k is not found in the current subgrid;
-            //subgrid found by grid[i][j] i = (r//3*3, r//3*3+3), j = (c//3*3, c//3*3+3) 
+            bool InSubGrid = false;
 
-            int subGridStartRow = r/3*3;
-            int subGridStartColumn = c/3*3;
-            bool notInSubGrid = true;
             for (int i = 0; i < 3; i++)
             {
-                for (int j = 0; j < 3; j++)
-                {
-                    if (grid[subGridStartRow+i,subGridStartColumn+j] == k)
-                    {
-                        break;
-                    }
-                }
-                if (!notInSubGrid)
+                if (InSubGrid)
                 {
                     break;
                 }
+                for (int j = 0; j < 3; j++)
+                {
+                    if (grid[subGridStartRow + i, subGridStartColumn + j] == k)
+                    {
+                        InSubGrid = true;
+                        break;
+                    }
+                }
             }
-            return notInRow && notInColumn && notInSubGrid;
+            if (InRow || InColumn || InSubGrid)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         int[] GetColumn(int[,] matrix, int columnNumber)
         {

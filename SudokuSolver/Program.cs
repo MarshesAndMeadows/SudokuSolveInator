@@ -1,10 +1,10 @@
 ﻿using MDL;
 using SolverMethods;
-
+using System.Diagnostics.Metrics;
+using System.Threading.Tasks.Dataflow;
 
 SudokuSolver solve = new SudokuSolver();
 
-SudokuGrid grid = new SudokuGrid();
 int[,] sudokuGrid = new int[,]
 {
     {5, 3, 0, 0, 7, 0, 0, 0, 0},
@@ -17,5 +17,30 @@ int[,] sudokuGrid = new int[,]
     {0, 0, 0, 4, 1, 9, 0, 0, 5},
     {0, 0, 0, 0, 8, 0, 0, 7, 9}
 };
-grid.Grid = sudokuGrid;
+
+int[,] solved = solve.Solve(sudokuGrid);
+
+int counter = 0;
+int bigCounter = 0;
+foreach (int i in solved)
+{
+    if (counter % 9 == 0)
+    {
+        Console.WriteLine();
+       
+        if (bigCounter % 3 == 0)
+        {
+            Console.WriteLine("--------------------");
+        }
+        bigCounter++;
+    }
+    if (counter % 3 == 0)
+    {
+        Console.Write("|");
+
+    }
+    Console.Write(i + " ");
+
+    counter++;
+}
 
